@@ -1,2 +1,5 @@
-# .circleci
-Template repository for starting a project with CircleCI config (i.e., boilerplate)
+# Patterns
+
+A collection of CircleCI configs to showcase, _hopefully_, simple patterns based on problems faced by customers.
+
+Please check out the branches for various patterns!
