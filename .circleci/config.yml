@@ -2,6 +2,10 @@ version: 2.1
 
 jobs:
   deploy:
+    parameters:
+      num_retries:
+        type: integer
+        default: 0
     docker:
       - image: cimg/base:stable
     steps:
@@ -11,14 +15,22 @@ jobs:
       - run:
           name: (mock) Deploy
           command: |
-            echo "Here, we try to deploy/roll out our changes unsuccessfully"
-            # explicitly failing this
-            exit 1
-      - run:
-          name: (mock) Deploy (retry)
-          command: |
-            echo "Here, we try to deploy/roll out our changes finally"
-          when: on_fail
+            RETRIES=<< parameters.num_retries >>
+
+            function deploy() {
+              RETVAL=$(echo "$RANDOM % 2" | bc)
+              echo "Here, we try to deploy/roll out our changes: ${RETVAL}"
+              return $RETVAL
+            }
+
+            SUCCESS=$(deploy)
+
+            while [ (! $SUCCESS) && ($RETRIES -gt 0) ]
+            do
+              sleep 2
+              ((RETRIES--))
+              SUCCESS=$(deploy)
+            done
       - run:
           name: (mock) Post-deploy Cleanup
           command: echo "Here, we run any post-deployment instructions"
@@ -27,4 +39,5 @@ jobs:
 workflows:
   main:
     jobs:
-      - deploy
+      - deploy:
+          num_retries: 1
