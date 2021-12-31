@@ -1,17 +1,30 @@
 version: 2.1
 
 jobs:
-  echo:
+  deploy:
     docker:
       - image: cimg/base:stable
     steps:
       - run:
-          name: Greet
-          command: echo "I love ${COLOR} builds."
-          environment:
-            COLOR: "green"
+          name: (mock) Setup
+          command: echo "Here, we install prerequisites, like aws-cli, etc."
+      - run:
+          name: (mock) Deploy
+          command: |
+            echo "Here, we try to deploy/roll out our changes unsuccessfully"
+            # explicitly failing this
+            exit 1
+      - run:
+          name: (mock) Deploy (retry)
+          command: |
+            echo "Here, we try to deploy/roll out our changes finally"
+          when: on_fail
+      - run:
+          name: (mock) Post-deploy Cleanup
+          command: echo "Here, we run any post-deployment instructions"
+
 
 workflows:
   main:
     jobs:
-      - echo
+      - deploy
