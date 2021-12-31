@@ -25,7 +25,7 @@ jobs:
 
             SUCCESS=$(deploy)
 
-            while [ (! $SUCCESS) && ($RETRIES -gt 0) ]
+            while [ ($SUCCESS -ne 0) && ($RETRIES -gt 0) ]
             do
               sleep 2
               ((RETRIES--))
